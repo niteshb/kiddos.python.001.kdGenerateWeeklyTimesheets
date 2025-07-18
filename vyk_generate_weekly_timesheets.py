@@ -13,6 +13,7 @@ pdfmetrics.registerFont(TTFont('Noto Serif', 'C:\\Windows\\Fonts\\NotoSerif-Vari
 from pprint import pprint
 
 # Create PDF with A4 page size in landscape
+# Create PDF with A4 page size in landscape
 pdf_file = "week_schedule.pdf"
 doc = BaseDocTemplate(
     pdf_file,
@@ -100,3 +101,4 @@ elements.append(table)
 #elements.append(img)
 doc.build(elements)
 print(f"PDF generated: {pdf_file}")
+
