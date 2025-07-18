@@ -1,69 +1,102 @@
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import pagesizes
+from reportlab.platypus import SimpleDocTemplate, BaseDocTemplate
+from reportlab.platypus import Frame, Paragraph, NextPageTemplate, PageBreak, PageTemplate
+from reportlab.platypus import Table, Image
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from functools import partial
+from vykWeeklyTimesheetsTableStyle import vykGetWeeklyTimesheetTableStyle
+from vykWeeklyTimesheetsData import vykWTCurrentStaffNames, vykWTDates, vykWTDays
 
-# Data for the table
-names = [
-    "Swati B",
-    "Rupam Priya",
-    "Ramya S",
-    "Sakshi S",
-    "Mansi R",
-    "Tulika N",
-    "Poonam",
-    "Mayshar"
-]
+pdfmetrics.registerFont(TTFont('Noto Serif', 'C:\\Windows\\Fonts\\NotoSerif-VariableFont_wdth,wght.ttf'))
+from pprint import pprint
 
-# Column headers for July 21-27, 2025
-days = [
-    "21 Jul 2025\nMonday", "22 Jul 2025\nTuesday", "23 Jul 2025\nWednesday",
-    "24 Jul 2025\nThursday", "25 Jul 2025\nFriday", "26 Jul 2025\nSaturday",
-    "27 Jul 2025\nSunday"
-]
-headers = ["Name"] + [day + "\nIn" for day in days] + [day + "\nOut" for day in days]
-
-# Create table data: first column is names, rest are empty
-data = [[name] + [""] * (len(days) * 2) for name in names]
-data.insert(0, headers)  # Insert headers as the first row
-
-# Create PDF with A4 page size
+# Create PDF with A4 page size in landscape
 pdf_file = "week_schedule.pdf"
-doc = SimpleDocTemplate(
+doc = BaseDocTemplate(
     pdf_file,
-    pagesize=(A4[1], A4[0]),  # Swap width and height for landscape (297mm x 210mm)
-    leftMargin=10*mm,
-    rightMargin=10*mm,
-    topMargin=10*mm,
-    bottomMargin=10*mm
+    pagesize=pagesizes.landscape(pagesizes.A4),  # Swap width and height for landscape (297mm x 210mm)
+    leftMargin=2*mm,  # Reduced to fit table
+    rightMargin=2*mm,  # Reduced to fit table
+    topMargin=13*mm,
+    bottomMargin=4*mm,
+    #showBoundary=1,
 )
+doc.title = 'Attendance Sheet - Staff - AY 2025-26'
+frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height-3.7*mm, id='normal',
+    leftPadding=0,
+    topPadding=0,
+    rightPadding=0,
+    bottomPadding=0,
+    #showBoundary=1,
+)
+def vykOnPageWeeklyTimesheet(canvas, doc, imgLogo):
+    canvas.saveState()
+    # Header
+    x, y = 62*mm, 194*mm
+    imgLogoPath = r"D:\GoogleDrive\kiddos.academy.in@gmail.com\Stationery\Logo\images\transparent - shadow - no-internal-glow - 10%.png"
+    canvas.drawImage(
+        imgLogoPath, 
+        x, y,
+        height=16*mm,
+        preserveAspectRatio=True,
+        mask='auto',
+    )
+
+    # Footer
+    #
+    canvas.restoreState()
+
+# Add image to the top right
+image_path = r"D:\GoogleDrive\kiddos.academy.in@gmail.com\Stationery\Logo\images\transparent - shadow - no-internal-glow - 10%.png"
+imgLogo = Image(image_path)
+imgLogo.vAlign = 'TOP'
+imgLogo.hAlign = 'LEFT'
+imgLogo._restrictSize(70*mm, 16*mm) # width, hieght
+
+doc.addPageTemplates([
+    PageTemplate(id='OneCol', frames=frame, 
+        onPage=partial(vykOnPageWeeklyTimesheet, imgLogo=imgLogo),
+    ), 
+])
+
+def vykOnPageWeeklyTimesheet(canvas, doc, imgLogo):
+    canvas.saveState()
+    # Header
+    # Footer
+    canvas.restoreState()
+
 # Create table
-table = Table(data)
+# Column headers for July 21-27, 2025
+headers = [
+    ["Name"] + [""] * 14, 
+    [""] * 15, 
+    [""] + ["In", "Out"] * 7
+]
+headers[0][1::2] = vykWTDates
+headers[1][1::2] = vykWTDays
+data = headers + [[name] + [""] * (len(vykWTDays) * 2) for name in vykWTCurrentStaffNames]
+#pprint(data)
+rowsHeaders = 3
+# Column widths: 35mm for Name, 18mm for each In/Out column
+colWidthsHeader = 35*mm
+colWidthsData = 18*mm
+# Set row heights to 12mm for all rows (including header)
+rowHeightsHeaders = 7*mm
+rowHeightsData = 12*mm
 
-# Table style to match the layout
-table.setStyle(TableStyle([
-    ('BACKGROUND', (0, 0), (-1, 0), colors.grey),  # Header background
-    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),  # Header text color
-    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center align all cells
-    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Bold font for headers
-    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),  # Regular font for data
-    ('FONTSIZE', (0, 0), (-1, 0), 8),  # Smaller font size for headers
-    ('FONTSIZE', (0, 1), (-1, -1), 8),  # Same font size for data
-    ('LEADING', (0, 0), (-1, -1), 10),  # Line spacing
-    ('BOTTOMPADDING', (0, 0), (-1, 0), 6),  # Padding for header
-    ('TOPPADDING', (0, 0), (-1, 0), 6),  # Padding for header
-    ('BACKGROUND', (0, 1), (-1, -1), colors.white),  # Data background
-    ('GRID', (0, 0), (-1, -1), 0.5, colors.black),  # Thin grid lines
-    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # Vertical align middle
-    ('BOX', (0, 0), (-1, -1), 1, colors.black),  # Outer border
-]))
-
-# Column widths as specified: 35mm for Name, 18mm for each In/Out column
-col_widths = [35*mm] + [18*mm] * (len(days) * 2)  # 15 columns total
-table._argW = col_widths
+rowsData = len(vykWTCurrentStaffNames)
+table = Table(data, 
+    repeatRows=3,
+    rowHeights=[rowHeightsHeaders] * rowsHeaders + [rowHeightsData] * rowsData,  # 3 header rows + name rows
+    colWidths=[colWidthsHeader] + [colWidthsData] * (len(vykWTDays) * 2),
+)
+table.setStyle(vykGetWeeklyTimesheetTableStyle(rowsHeaders, rowsData, 1, 14))
 
 # Build PDF
-elements = [table]
+elements = []
+elements.append(table)
+#elements.append(img)
 doc.build(elements)
-
 print(f"PDF generated: {pdf_file}")
