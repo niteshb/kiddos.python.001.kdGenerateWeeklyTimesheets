@@ -1,6 +1,5 @@
-from datetime import date, timedelta
 
-# Data for the table
+# Change the following weekly
 vykWTCurrentStaffNames = [
     "Swati B",
     "Rupam Priya",
@@ -22,4 +21,4 @@ vykWTWeekNumber = 18
 
 # Change the following annually
 vykWTAcademicYearStartYear = 2025
-vykWTAcademicYearStartDay = date(2025, 4, 1)
+vykWTAcademicYearStartDayTuple = (2025, 4, 1)

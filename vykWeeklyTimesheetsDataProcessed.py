@@ -1,5 +1,7 @@
 from datetime import date, timedelta
-from vykWeeklyTimesheetsData import vykWTAcademicYearStartDay, vykWTWeekNumber, vykWTAcademicYearStartYear
+from vykWeeklyTimesheetsData import vykWTAcademicYearStartDayTuple, vykWTWeekNumber, vykWTAcademicYearStartYear
+
+vykWTAcademicYearStartDay = date(vykWTAcademicYearStartDayTuple[0], vykWTAcademicYearStartDayTuple[1], vykWTAcademicYearStartDayTuple[2])
 
 vykWTAcademicYearStartWeekday = vykWTAcademicYearStartDay.weekday() # monday = 0
 vykWTAcademicYearStartDayFix = vykWTAcademicYearStartDay - timedelta(vykWTAcademicYearStartWeekday)
