@@ -13,6 +13,7 @@ pdfmetrics.registerFont(TTFont('Noto Serif', 'C:\\Windows\\Fonts\\NotoSerif-Vari
 from pprint import pprint
 
 # Create PDF with A4 page size in landscape
+# Create PDF with A4 page size in landscape
 pdf_file = "week_schedule.pdf"
 doc = BaseDocTemplate(
     pdf_file,
@@ -61,14 +62,7 @@ doc.addPageTemplates([
     ), 
 ])
 
-def vykOnPageWeeklyTimesheet(canvas, doc, imgLogo):
-    canvas.saveState()
-    # Header
-    # Footer
-    canvas.restoreState()
-
 # Create table
-# Column headers for July 21-27, 2025
 headers = [
     ["Name"] + [""] * 14, 
     [""] * 15, 
@@ -95,8 +89,6 @@ table = Table(data,
 table.setStyle(vykGetWeeklyTimesheetTableStyle(rowsHeaders, rowsData, 1, 14))
 
 # Build PDF
-elements = []
-elements.append(table)
-#elements.append(img)
+elements = [table]
 doc.build(elements)
 print(f"PDF generated: {pdf_file}")
