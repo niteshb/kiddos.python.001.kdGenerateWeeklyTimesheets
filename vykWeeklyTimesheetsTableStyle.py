@@ -14,7 +14,7 @@ vyk.color.LightBlue_01 = RGB(200, 240, 255)
 vyk.color.Blue_01 = RGB(150, 220, 255)
 vyk.color.LightMustard_01 = RGB(255, 250, 235)
 vyk.color.Mustard_01 = RGB(255, 235, 185)
-vyk.color.Gray_01 = RGB(220, 220, 220)
+vyk.color.Gray_01 = RGB(240, 240, 240)
 vyk.color.BlueBlack_01 = RGB(0, 0, 120)
 
 # Table style to match the layout

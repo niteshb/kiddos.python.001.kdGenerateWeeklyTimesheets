@@ -6,8 +6,13 @@ from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from functools import partial
+from reportlab.lib.styles import getSampleStyleSheet
+styles = getSampleStyleSheet()
+styleNormal = styles['Normal']
+
 from vykWeeklyTimesheetsTableStyle import vykGetWeeklyTimesheetTableStyle
-from vykWeeklyTimesheetsData import vykWTCurrentStaffNames, vykWTDates, vykWTDays
+from vykWeeklyTimesheetsData import vykWTCurrentStaffNames
+from vykWeeklyTimesheetsDataProcessed import vykWTDates, vykWTWeekdays, vykWTHeaderLeft, vykWTHeaderMiddle
 
 pdfmetrics.registerFont(TTFont('Noto Serif', 'C:\\Windows\\Fonts\\NotoSerif-VariableFont_wdth,wght.ttf'))
 from pprint import pprint
@@ -44,7 +49,16 @@ def vykOnPageWeeklyTimesheet(canvas, doc, imgLogo):
         preserveAspectRatio=True,
         mask='auto',
     )
+    styleNormal.fontSize = 24
+    styleNormal.fontName = 'Noto Serif'
+    paraHeader = Paragraph(vykWTHeaderLeft, styleNormal)
+    w, h = paraHeader.wrap(doc.width, doc.height)
+    paraHeader.drawOn(canvas, doc.leftMargin+3*mm, doc.height+9*mm)
 
+    styleNormal.fontSize = 20
+    paraHeader = Paragraph(vykWTHeaderMiddle, styleNormal)
+    w, h = paraHeader.wrap(doc.width, doc.height)
+    paraHeader.drawOn(canvas, doc.leftMargin+170*mm, doc.height+7*mm)
     # Footer
     #
     canvas.restoreState()
@@ -69,8 +83,8 @@ headers = [
     [""] + ["In", "Out"] * 7
 ]
 headers[0][1::2] = vykWTDates
-headers[1][1::2] = vykWTDays
-data = headers + [[name] + [""] * (len(vykWTDays) * 2) for name in vykWTCurrentStaffNames]
+headers[1][1::2] = vykWTWeekdays
+data = headers + [[name] + [""] * (len(vykWTWeekdays) * 2) for name in vykWTCurrentStaffNames]
 #pprint(data)
 rowsHeaders = 3
 # Column widths: 35mm for Name, 18mm for each In/Out column
@@ -84,7 +98,7 @@ rowsData = len(vykWTCurrentStaffNames)
 table = Table(data, 
     repeatRows=3,
     rowHeights=[rowHeightsHeaders] * rowsHeaders + [rowHeightsData] * rowsData,  # 3 header rows + name rows
-    colWidths=[colWidthsHeader] + [colWidthsData] * (len(vykWTDays) * 2),
+    colWidths=[colWidthsHeader] + [colWidthsData] * (len(vykWTWeekdays) * 2),
 )
 table.setStyle(vykGetWeeklyTimesheetTableStyle(rowsHeaders, rowsData, 1, 14))
 
