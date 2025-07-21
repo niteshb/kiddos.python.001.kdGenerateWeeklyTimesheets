@@ -14,7 +14,10 @@ from vykWeeklyTimesheetsTableStyle import vykGetWeeklyTimesheetTableStyle
 from vykWeeklyTimesheetsData import vykWTCurrentStaffNames
 from vykWeeklyTimesheetsDataProcessed import vykWTDates, vykWTWeekdays, vykWTHeaderLeft, vykWTHeaderMiddle
 
-pdfmetrics.registerFont(TTFont('Noto Serif', 'C:\\Windows\\Fonts\\NotoSerif-VariableFont_wdth,wght.ttf'))
+vyFontsPath = "D:\\projects\\common\\res\\fonts\\Noto_Serif\\static\\"
+pdfmetrics.registerFont(TTFont('NotoSerifR', vyFontsPath + 'NotoSerif-Regular.ttf'))
+pdfmetrics.registerFont(TTFont('NotoSerifB', vyFontsPath + 'NotoSerif-Bold.ttf'))
+
 from pprint import pprint
 
 # Create PDF with A4 page size in landscape
@@ -40,17 +43,17 @@ frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height-3.7*mm, id
 def vykOnPageWeeklyTimesheet(canvas, doc, imgLogo):
     canvas.saveState()
     # Header
-    x, y = 62*mm, 194*mm
+    x, y = 60*mm, 193*mm
     imgLogoPath = r"D:\GoogleDrive\kiddos.academy.in@gmail.com\Stationery\Logo\images\transparent - shadow - no-internal-glow - 10%.png"
     canvas.drawImage(
         imgLogoPath, 
         x, y,
-        height=16*mm,
+        height=15*mm,
         preserveAspectRatio=True,
         mask='auto',
     )
     styleNormal.fontSize = 24
-    styleNormal.fontName = 'Noto Serif'
+    styleNormal.fontName = 'NotoSerifR'
     paraHeader = Paragraph(vykWTHeaderLeft, styleNormal)
     w, h = paraHeader.wrap(doc.width, doc.height)
     paraHeader.drawOn(canvas, doc.leftMargin+3*mm, doc.height+9*mm)
@@ -78,12 +81,10 @@ doc.addPageTemplates([
 
 # Create table
 headers = [
-    ["Name"] + [""] * 14, 
-    [""] * 15, 
+    ["Name"] + [val for pair in zip(vykWTDates, [""]*7) for val in pair], 
+    [""] + [val for pair in zip(vykWTWeekdays, [""]*7) for val in pair], 
     [""] + ["In", "Out"] * 7
 ]
-headers[0][1::2] = vykWTDates
-headers[1][1::2] = vykWTWeekdays
 data = headers + [[name] + [""] * (len(vykWTWeekdays) * 2) for name in vykWTCurrentStaffNames]
 #pprint(data)
 rowsHeaders = 3
@@ -104,5 +105,5 @@ table.setStyle(vykGetWeeklyTimesheetTableStyle(rowsHeaders, rowsData, 1, 14))
 
 # Build PDF
 elements = [table]
-doc.build(elements)
+doc.multiBuild(elements)
 print(f"PDF generated: {pdf_file}")

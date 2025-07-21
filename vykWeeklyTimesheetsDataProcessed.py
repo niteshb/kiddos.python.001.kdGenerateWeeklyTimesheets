@@ -16,10 +16,15 @@ vykWTAcademicYear = '%d - %d' % (vykWTAcademicYearStartYear, vykWTAcademicYearSt
 vykWTHeaderLeft = 'AY ' + vykWTAcademicYear + ': In Out Timesheet'
 vykWTHeaderMiddle = 'Week %02d' % vykWTWeekNumber
 
-if __name__ == '__main__':
+def printInfo():
     print('vykWTAcademicYearStartDay:', vykWTAcademicYearStartDay.strftime("%d-%b-%Y"))
     print('vykWTAcademicYearStartDayFix:', vykWTAcademicYearStartDayFix.strftime("%d-%b-%Y"))
     print('vykWTWeekStartDay:', vykWTWeekStartDay.strftime("%d-%b-%Y"))
     print('vykWTDates:', vykWTDates)
     print(vykWTHeaderLeft)
     print(vykWTHeaderMiddle)
+
+printInfo()
+
+if __name__ == '__main__':
+    printInfo()

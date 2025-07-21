@@ -2,7 +2,7 @@
 # Change the following weekly
 vykWTCurrentStaffNames = [
     "Swati B",
-    "Rupam Priya",
+    "Rupam P",
     "Ramya S",
     "Sakshi S",
     "Mansi R",
@@ -15,9 +15,9 @@ vykWTCurrentStaffNames = [
     "Lalita",
     "",
     "",
-    "",
+#    "",
 ]
-vykWTWeekNumber = 18
+vykWTWeekNumber = 17
 
 # Change the following annually
 vykWTAcademicYearStartYear = 2025
